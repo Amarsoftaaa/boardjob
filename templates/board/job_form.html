@@ -1,0 +1,51 @@
+{% extends 'board/base.html' %}
+{% load static %}
+
+{% block title %}Job Form{% endblock %}
+
+{% block content %}
+
+    <div class="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 py-16 px-4">
+        <div class="max-w-3xl mx-auto">
+
+            <div class="bg-white shadow-xl rounded-2xl p-10 border border-slate-200">
+
+                <h2 class="text-3xl font-bold text-slate-800 mb-8 text-center">
+                    Postavi oglas za posao
+                </h2>
+
+                <form method="post" class="space-y-6">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                        <div class="flex flex-col space-y-2">
+
+                            <label class="text-sm font-semibold text-slate-700 tracking-wide">
+                                {{ field.label }}
+                            </label>
+
+                            <div>
+                                {{ field }}
+                            </div>
+
+                            {% if field.errors %}
+                                <p class="text-red-500 text-sm">
+                                    {{ field.errors }}
+                                </p>
+                            {% endif %}
+
+                        </div>
+                    {% endfor %}
+
+                    <button type="submit"
+                            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-md">
+                        Objavi oglas
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
