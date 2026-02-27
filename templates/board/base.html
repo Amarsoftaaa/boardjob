@@ -2,6 +2,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="{% static 'board/style.css' %}">
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>{% block title %}JobBoard{% endblock %}</title>
@@ -25,13 +26,13 @@
 
                 <nav class="hidden sm:flex items-center gap-6 text-sm text-gray-600 ">
                     <a href="{% url 'job_list' %}" class="hover:text-gray-900">Jobs</a>
-                    <a href="{% url 'company' %}" class="hover:text-gray-900">Companies</a>
+
                 </nav>
             </div>
 
             <!-- Right -->
             <div class="flex items-center gap-3">
-                {% if user.is_authenticated %}
+                {% if user.is_authenticated  %}
 
                     <a href="{% url 'profil' %}"
                        class="text-sm text-gray-600 hover:text-gray-900">
@@ -46,22 +47,58 @@
                         </button>
                     </form>
 
+                {% endif %}
+
+
+                {% if user.role == "COMPANY" %}
+
                     <a href="{% url 'job_create' %}"
                        class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700">
                         Post a job
                     </a>
 
-                {% else %}
+                {% endif %}
 
-                    <a href="{% url 'login' %}"
-                       class="text-sm text-gray-600 hover:text-gray-900">
-                        Login
-                    </a>
+                {% if not request.user.is_authenticated %}
 
-                    <a href=""
-                       class="text-sm text-gray-600 hover:text-gray-900">
-                    Register
-                    </a>
+                    <div class="flex items-center gap-6">
+                        <a href="{% url 'login' %}"
+                           class="text-sm text-gray-600 hover:text-gray-900">
+                            Login
+                        </a>
+
+                        <div class="relative">
+                            <!-- Dugme -->
+                            <button id="registerBtn"
+                                    type="button"
+                                    class="text-sm text-gray-600 hover:text-gray-900 inline-flex items-center gap-1 focus:outline-none">
+                                Register
+                                <svg class="h-4 w-4 transition-transform duration-200"
+                                     id="registerIcon"
+                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          stroke-width="2"
+                                          d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+
+                            <!-- Dropdown meni -->
+                            <div id="registerMenu"
+                                 class="absolute right-0 mt-2 w-56 rounded-xl border border-gray-200 bg-white shadow-lg hidden z-50">
+
+                                <a href="{% url 'register_candidate' %}"
+                                   class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-t-xl">
+                                    Register as Candidate
+                                </a>
+
+                                <a href="{% url 'register_company' %}"
+                                   class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-b-xl">
+                                    Register as Company
+                                </a>
+
+                            </div>
+                        </div>
+                    </div>
 
                 {% endif %}
 
@@ -76,4 +113,24 @@
 </main>
 
 </body>
+
+<script>
+  const btn = document.getElementById("registerBtn");
+  const menu = document.getElementById("registerMenu");
+  const icon = document.getElementById("registerIcon");
+
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    menu.classList.toggle("hidden");
+    icon.classList.toggle("rotate-180");
+  });
+
+  // klik van menija zatvara dropdown
+  document.addEventListener("click", (e) => {
+    if (!menu.contains(e.target) && !btn.contains(e.target)) {
+      menu.classList.add("hidden");
+      icon.classList.remove("rotate-180");
+    }
+  });
+</script>
 </html>

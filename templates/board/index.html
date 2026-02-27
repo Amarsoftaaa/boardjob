@@ -37,6 +37,7 @@
         <input
           type="text"
           name="q"
+          value = "{{ request.GET.q }}"
           placeholder="Keyword (e.g. Python, QA, React)"
           class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-100"
         />
@@ -44,6 +45,7 @@
         <input
           type="text"
           name="location"
+          value = "{{ request.GET.location }}"
           placeholder="Location (e.g. Belgrade, Remote)"
           class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-100"
         />
@@ -59,11 +61,11 @@
       <!-- Quick filters (pure links) -->
       <div class="mt-4 flex flex-wrap justify-center gap-2 text-sm">
         <a class="rounded-full bg-white px-4 py-2 ring-1 ring-gray-200 hover:bg-gray-50"
-           href="{% url 'job_list' %}?type=remote">Remote</a>
+           href="{% url 'job_list' %}?job_type=remote">Remote</a>
         <a class="rounded-full bg-white px-4 py-2 ring-1 ring-gray-200 hover:bg-gray-50"
-           href="{% url 'job_list' %}?level=junior">Junior</a>
+           href="{% url 'job_list' %}?job_type=hybrid">Hybrid</a>
         <a class="rounded-full bg-white px-4 py-2 ring-1 ring-gray-200 hover:bg-gray-50"
-           href="{% url 'job_list' %}?job_type=full_time">Full-time</a>
+           href="{% url 'job_list' %}?employment_type=full_time">Full-time</a>
       </div>
     </div>
 

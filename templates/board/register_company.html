@@ -1,0 +1,23 @@
+{% extends "board/base.html" %}
+{% load static %}
+
+
+{% block title %}Register Company{% endblock %}
+
+{% block content %}
+
+   <div>
+    <form method="POST">
+    {% csrf_token %}
+
+            <div class="form-container">
+                {{ form.as_p }}
+            </div>
+
+
+        <button type="submit" class="btn btn-primary ">Submit</button>
+    </form>
+   </div>
+
+
+{% endblock %}
