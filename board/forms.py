@@ -22,12 +22,17 @@ class CandidateRegisterForm(UserCreationForm):
 
     class Meta(UserCreationForm.Meta):
         model = CustomUser
-        fields = ("username", "password1", "password2", "first_name", "last_name", "location", "birth_date")
+        fields = ("username", "password1", "password2", "first_name", "last_name","email", "location", "birth_date")
 
 INPUT_CLASS = (
     "w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-2 "
     "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 )
+
+class CandidateCVForm(forms.ModelForm):
+    class Meta:
+        model = CandidateProfile
+        fields = ['cv']
 
 
 
@@ -43,7 +48,7 @@ class JobForm(forms.ModelForm):
             }),
             "description": forms.Textarea(attrs={
                 "class": "w-full rounded-lg border border-slate-300 px-4 py-3 h-40 resize-none focus:ring-2 focus:ring-indigo-500 focus:outline-none",
-                "placeholder": "Detaljno opišite posao..."
+                "placeholder": "Describe the job in detail..."
             }),
             "location": forms.TextInput(attrs={
                 "class": "w-full rounded-lg border border-slate-300 px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
@@ -61,28 +66,26 @@ class JobForm(forms.ModelForm):
         }
 
 
-class CandidateProfileForm(forms.ModelForm):
+class MessageForm(forms.ModelForm):
     class Meta:
-        model = CandidateProfile
-        # prikazi sva polja osim user (user se ne uređuje)
-        fields = ["email", "first_name", "last_name", "location", "birth_date", "cv"]
-
+        model = Messages
+        fields = ["content"]
         widgets = {
-            "email": forms.EmailInput(attrs={"class": "w-full border rounded p-2"}),
-            "first_name": forms.TextInput(attrs={"class": "w-full border rounded p-2"}),
-            "last_name": forms.TextInput(attrs={"class": "w-full border rounded p-2"}),
-            "location": forms.TextInput(attrs={"class": "w-full border rounded p-2"}),
-            "birth_date": forms.DateInput(attrs={"type": "date", "class": "w-full border rounded p-2"}),
-            "cv": forms.ClearableFileInput(attrs={"class": "w-full border rounded p-2"}),
+            "content": forms.Textarea(attrs={
+                "class": "w-full min-h-[180px] rounded-xl border border-gray-300 px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+
+                "rows": 5,
+                "placeholder": "Write a message..."
+            })
+        }
+        labels = {
+            "content": ""
         }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def clean_content(self):
+        content = self.cleaned_data["content"].strip()
+        if not content:
+            raise forms.ValidationError("Message cannot be empty..")
+        return content
 
-        # ✅ polja koja NE želiš da korisnik uređuje (ali želiš da ih vidi)
-        readonly_fields = ["email"]  # npr. email ne može mijenjati
-
-        for f in readonly_fields:
-            if f in self.fields:
-                self.fields[f].disabled = True  # read-only u formi
 

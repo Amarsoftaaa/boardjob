@@ -18,7 +18,7 @@ class CandidateProfile(models.Model):
     email = models.EmailField()
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    location = models.CharField(max_length=100,blank=True)
+    location = models.CharField(max_length=100)
     birth_date = models.DateField(null=True, blank=True)
     cv = models.FileField(upload_to='cv/',null=True, blank=True)
 
@@ -95,3 +95,17 @@ class Application(models.Model):
 
         def __str__(self):
             return f"{self.candidate.user.username} -> {self.job.title}"
+
+class Messages(models.Model):
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name='sent_messages')
+    receiver = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name='received_messages')
+    job = models.ForeignKey(Job,on_delete=models.CASCADE,null=True,blank=True)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return f"{self.sender.username} -> {self.receiver.username}"
+
+

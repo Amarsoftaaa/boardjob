@@ -1,0 +1,179 @@
+{% extends 'board/base.html' %}
+
+{% load static %}
+
+{% block title %}Profil{% endblock %}
+
+
+{% block content %}
+
+<div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- LIJEVA KOLONA -->
+        <div class="lg:col-span-1 space-y-6">
+
+            <!-- PROFIL KARTICA -->
+            <div class="bg-white rounded-2xl shadow border border-gray-100 p-6">
+                <div class="flex flex-col items-center text-center">
+                    <div class="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center text-3xl font-bold text-blue-600">
+                        {{ profile.first_name|first }}{{ profile.last_name|first }}
+                    </div>
+
+                    <h1 class="mt-4 text-2xl font-bold text-gray-800">
+                        {{ profile.first_name }} {{ profile.last_name }}
+                    </h1>
+
+                    <p class="text-gray-500 mt-1">
+                        {{ profile.email }}
+                    </p>
+
+                    <p class="text-sm text-gray-400 mt-1">
+                        {{ profile.location }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- CV KARTICA -->
+            <div class="bg-white rounded-2xl shadow border border-gray-100 p-6">
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">CV / Resume</h2>
+
+                {% if profile.cv %}
+                    <div class="space-y-3">
+                        <p class="text-sm text-green-600 font-medium">
+                            CV has been uploaded.
+                        </p>
+
+                        <a href="{{ profile.cv.url }}"
+                           target="_blank"
+                           class="inline-block w-full text-center bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition">
+                            View CV
+                        </a>
+                    </div>
+                {% else %}
+                    <p class="text-sm text-gray-500 mb-4">
+                        There is currently no CV uploaded.
+                    </p>
+                {% endif %}
+
+                <form method="POST" enctype="multipart/form-data" class="mt-4 space-y-3">
+                    {% csrf_token %}
+                    <input type="file" name="cv"
+                           class="block w-full text-sm text-gray-600 border border-gray-300 rounded-xl p-2">
+                    <button type="submit"
+                            class="w-full bg-gray-900 text-white px-4 py-2 rounded-xl hover:bg-black transition">
+                        Upload CV
+                    </button>
+                </form>
+            </div>
+
+            <!-- INFO KARTICA -->
+            <div class="bg-white rounded-2xl shadow border border-gray-100 p-6">
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">Personal Info</h2>
+
+                <div class="space-y-3 text-sm text-gray-700">
+                    <div class="flex justify-between border-b pb-2">
+                        <span class="font-medium text-gray-500">Username</span>
+                        <span>{{ request.user.username }}</span>
+                    </div>
+
+                    <div class="flex justify-between border-b pb-2">
+                        <span class="font-medium text-gray-500">Email</span>
+                        <span>{{ profile.email }}</span>
+                    </div>
+
+                    <div class="flex justify-between border-b pb-2">
+                        <span class="font-medium text-gray-500">Location</span>
+                        <span>{{ profile.location }}</span>
+                    </div>
+
+                    <div class="flex justify-between">
+                        <span class="font-medium text-gray-500">Birth date</span>
+                        <span>{{ profile.birth_date }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DESNA KOLONA -->
+        <div class="lg:col-span-2 space-y-6">
+
+            <!-- HEADER -->
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow p-6 text-white">
+                <h2 class="text-2xl font-bold">Welcome back, {{ profile.first_name }} 👋</h2>
+                <p class="mt-2 text-blue-100">
+                    Here you can track your applications and manage your CV.
+                </p>
+            </div>
+
+            <!-- PRIJAVE -->
+            <div class="bg-white rounded-2xl shadow border border-gray-100 p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-semibold text-gray-800">My Applications</h2>
+                    <span class="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+                        {{ applications|length }} applications
+                    </span>
+                </div>
+
+                {% if applications %}
+                    <div class="space-y-4">
+                        {% for application in applications %}
+                            <div class="border border-gray-200 rounded-2xl p-4 hover:shadow-md transition">
+                                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-800">
+                                            {{ application.job.title }}
+                                        </h3>
+                                        <p class="text-sm text-gray-500">
+                                            {{ application.job.company.company_name }}
+                                        </p>
+                                        <p class="text-sm text-gray-400 mt-1">
+                                            Applied on {{ application.created_at|date:"d.m.Y" }}
+                                        </p>
+                                    </div>
+
+                                    <div class="flex items-center gap-3">
+                                        {% if application.status == "pending" %}
+                                            <span class="bg-yellow-100 text-yellow-700 text-sm px-3 py-1 rounded-full">
+                                                Pending
+                                            </span>
+                                        {% elif application.status == "accepted" %}
+                                            <span class="bg-green-100 text-green-700 text-sm px-3 py-1 rounded-full">
+                                                Accepted
+                                            </span>
+                                        {% elif application.status == "rejected" %}
+                                            <span class="bg-red-100 text-red-700 text-sm px-3 py-1 rounded-full">
+                                                Rejected
+                                            </span>
+                                        {% else %}
+                                            <span class="bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full">
+                                                {{ application.status }}
+                                            </span>
+                                        {% endif %}
+
+                                        <a href="{% url 'job_detail' application.job.slug application.job.pk %}"
+                                           class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                            View Job
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-10">
+                        <p class="text-gray-500 text-lg">You don't have any applications yet..</p>
+                        <a href="{% url 'job_list' %}"
+                           class="inline-block mt-4 bg-blue-600 text-white px-5 py-2 rounded-xl hover:bg-blue-700 transition">
+                            Browse Jobs
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
