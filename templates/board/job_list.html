@@ -1,117 +1,170 @@
 {% extends 'board/base.html' %}
-
 {% load static %}
 
-{% block title %} Job List {% endblock %}
+{% block title %}Browse Jobs — Remote, Hybrid & On-Site Positions | JobBoard{% endblock %}
+{% block meta_description %}Explore the latest job openings in tech, design, marketing and more. Filter by remote, hybrid or on-site. Find full-time, part-time, contract and internship opportunities on JobBoard.{% endblock %}
+{% block og_title %}Browse Jobs — Remote, Hybrid & On-Site Positions | JobBoard{% endblock %}
+{% block og_description %}Explore the latest job openings in tech, design, marketing and more. Filter by remote, hybrid or on-site.{% endblock %}
+{% block twitter_title %}Browse Jobs | JobBoard{% endblock %}
+{% block twitter_description %}Explore the latest job openings in tech, design, marketing and more.{% endblock %}
 
 {% block content %}
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Header -->
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <h1 class="text-2xl font-semibold text-gray-900">Jobs</h1>
+<div class="bg-white border-b border-gray-200">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">
+      {% if request.GET.q %}Results for "<span class="text-blue-600">{{ request.GET.q }}</span>"
+      {% elif request.GET.location %}Jobs in "<span class="text-blue-600">{{ request.GET.location }}</span>"
+      {% else %}All Open Positions{% endif %}
+    </h1>
 
+    <!-- Search + Filter bar -->
+    <form method="GET" action="{% url 'job_list' %}" class="flex flex-col lg:flex-row gap-3">
+      <div class="relative flex-1">
+        <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Role, skill, or company..."
+          class="w-full rounded-xl border border-gray-300 py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
+      </div>
+      <div class="relative">
+        <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        <input type="text" name="location" value="{{ request.GET.location }}" placeholder="Location or Remote"
+          class="w-full rounded-xl border border-gray-300 py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
+      </div>
+      <select name="job_type"
+        class="rounded-xl border border-gray-300 py-2.5 px-4 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white cursor-pointer">
+        <option value="">All Types</option>
+        <option value="remote" {% if request.GET.job_type == "remote" %}selected{% endif %}>Remote</option>
+        <option value="hybrid" {% if request.GET.job_type == "hybrid" %}selected{% endif %}>Hybrid</option>
+        <option value="on_site" {% if request.GET.job_type == "on_site" %}selected{% endif %}>On-site</option>
+      </select>
+      <select name="employment_type"
+        class="rounded-xl border border-gray-300 py-2.5 px-4 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white cursor-pointer">
+        <option value="">All Employment</option>
+        <option value="full_time" {% if request.GET.employment_type == "full_time" %}selected{% endif %}>Full-time</option>
+        <option value="part_time" {% if request.GET.employment_type == "part_time" %}selected{% endif %}>Part-time</option>
+        <option value="contract" {% if request.GET.employment_type == "contract" %}selected{% endif %}>Contract</option>
+        <option value="internship" {% if request.GET.employment_type == "internship" %}selected{% endif %}>Internship</option>
+      </select>
+      <button type="submit"
+        class="rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition">
+        Search
+      </button>
+      {% if request.GET.q or request.GET.location or request.GET.job_type or request.GET.employment_type %}
+        <a href="{% url 'job_list' %}" class="rounded-xl border border-gray-300 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 transition flex items-center">
+          Clear
+        </a>
+      {% endif %}
+    </form>
+  </div>
+</div>
+
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+
+  <!-- Results count -->
+  {% if jobs %}
+    <p class="text-sm text-gray-500 mb-6">{{ jobs|length }} position{{ jobs|length|pluralize }} found</p>
+  {% endif %}
+
+  <!-- Jobs Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+    {% for job in jobs %}
+      <article class="group flex flex-col bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-lg hover:border-blue-200 transition-all duration-200">
+
+        <!-- Company avatar + name -->
+        <div class="flex items-center gap-3 mb-4">
+          <div class="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center text-white font-bold text-base shadow-sm"
+               style="background: linear-gradient(135deg,
+               {% with first=job.company.company_name|first %}
+                 {% if first == 'T' %}#2563eb,#4f46e5
+                 {% elif first == 'N' %}#7c3aed,#9333ea
+                 {% elif first == 'B' %}#0891b2,#0e7490
+                 {% elif first == 'G' %}#16a34a,#15803d
+                 {% elif first == 'S' %}#ea580c,#dc2626
+                 {% else %}#64748b,#475569
+                 {% endif %}
+               {% endwith %})">
+            {{ job.company.company_name|first|upper }}
+          </div>
+          <div class="min-w-0">
+            <p class="text-sm font-semibold text-gray-700 truncate">{{ job.company.company_name }}</p>
+            <div class="flex items-center gap-1 text-xs text-gray-400 mt-0.5">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              {{ job.location }}
             </div>
-
-
+          </div>
         </div>
 
-        <div class="mt-6 border-t border-gray-200"></div>
+        <!-- Job title -->
+        <h2 class="text-base font-bold text-gray-900 group-hover:text-blue-600 transition leading-snug mb-3">
+          {{ job.title }}
+        </h2>
 
-        <!-- Jobs Grid -->
-        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {% for job in jobs %}
-                <div class="group rounded-2xl border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md hover:border-gray-300 transition">
-
-                    <!-- Top row -->
-                    <div class="flex items-start justify-between gap-3">
-                        <div class="min-w-0">
-                            <h2 class="text-base font-semibold text-gray-900 line-clamp-1">
-                                {{ job.title }}
-                            </h2>
-                            <p class="text-sm text-gray-500 mt-1 line-clamp-1">
-                                {{ job.company }}
-                            </p>
-                        </div>
-
-                        <span class="shrink-0 inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 border border-blue-100">
-          {{ job.job_type }}
-        </span>
-                    </div>
-
-                    <!-- Meta -->
-                    <div class="mt-4 space-y-2 text-sm text-gray-600">
-                        <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                            </svg>
-                            <span class="line-clamp-1">{{ job.location }}</span>
-                        </div>
-
-                        <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <span>Posted: {{ job.created_at|date:"d.m.Y" }}</span>
-                        </div>
-                    </div>
-
-                    <!-- Description preview -->
-                    <p class="mt-4 text-sm text-gray-600 line-clamp-3">
-                        <b>Job Descripton:</b><br> {{ job.description }}
-                    </p>
-
-                    <p class="mt-4 text-sm text-gray-600 line-clamp-3">
-                        <b>Job type:</b><br>{{ job.job_type }}
-                    </p>
-
-                    <p class="mt-4 text-sm text-gray-600 line-clamp-3">
-                        {{ job.employment_type }}
-                    </p>
-
-                    <!-- Footer -->
-                    <div class="mt-5 flex items-center justify-between">
-                        <div class="text-sm font-medium text-gray-900">
-                            {% if job.salary %}
-                              <b>Job salary:</b><br>  {{ job.salary }} €
-                            {% else %}
-                                <span class="text-gray-500 font-normal">Salary not listed</span>
-                            {% endif %}
-                        </div>
-
-                        <!-- Detail link (safe - ne puca) -->
-                        <a href="{% url 'job_detail' slug=job.slug pk=job.pk %}"
-                           class="inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700 transition">
-                            View
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-            {% empty %}
-                <!-- Empty state -->
-                <div class="col-span-full rounded-2xl border border-dashed border-gray-300 bg-white p-10 text-center">
-                    <div class="mx-auto w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center">
-                        <svg class="w-6 h-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5l5 5v11a2 2 0 01-2 2z"/>
-                        </svg>
-                    </div>
-                    <h3 class="mt-4 text-base font-semibold text-gray-900">No jobs yet</h3>
-                    {% if user.role == "COMPANY" %}
-                        <p class="mt-1 text-sm text-gray-500">Add your first job.</p>
-                        <a href="/jobcreate/"
-                           class="inline-flex mt-5 items-center justify-center rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition">
-                            Post a job
-                        </a>
-                    {% endif %}
-                </div>
-            {% endfor %}
+        <!-- Badges -->
+        <div class="flex flex-wrap gap-2 mb-4">
+          <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold
+            {% if job.job_type == 'remote' %}badge-remote
+            {% elif job.job_type == 'hybrid' %}badge-hybrid
+            {% else %}badge-on_site{% endif %}">
+            {{ job.get_job_type_display }}
+          </span>
+          <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold
+            {% if job.employment_type == 'full_time' %}badge-full_time
+            {% elif job.employment_type == 'part_time' %}badge-part_time
+            {% elif job.employment_type == 'contract' %}badge-contract
+            {% else %}badge-internship{% endif %}">
+            {{ job.get_employment_type_display }}
+          </span>
         </div>
-    </div>
+
+        <!-- Description snippet -->
+        <p class="text-sm text-gray-500 leading-relaxed line-clamp-2 flex-1">
+          {{ job.description|truncatewords:20 }}
+        </p>
+
+        <!-- Footer -->
+        <div class="mt-5 flex items-center justify-between pt-4 border-t border-gray-100">
+          <div>
+            {% if job.salary %}
+              <p class="text-lg font-bold text-gray-900">${{ job.salary|floatformat:0 }}<span class="text-xs text-gray-400 font-normal">/yr</span></p>
+            {% else %}
+              <p class="text-sm text-gray-400 italic">Salary negotiable</p>
+            {% endif %}
+          </div>
+          <a href="{% url 'job_detail' slug=job.slug pk=job.pk %}"
+             class="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition shadow-sm group-hover:shadow-md">
+            View Job
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+
+        <!-- Posted date -->
+        <p class="text-xs text-gray-400 mt-3">Posted {{ job.created_at|date:"M d, Y" }}</p>
+      </article>
+    {% empty %}
+      <div class="col-span-full">
+        <div class="rounded-2xl border-2 border-dashed border-gray-300 bg-white p-16 text-center">
+          <div class="mx-auto w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
+            <svg class="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5l5 5v11a2 2 0 01-2 2z"/>
+            </svg>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900">No jobs found</h3>
+          <p class="mt-2 text-sm text-gray-500">Try adjusting your filters or search terms.</p>
+          <a href="{% url 'job_list' %}" class="inline-flex mt-6 items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition">
+            Clear Filters
+          </a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
 {% endblock %}

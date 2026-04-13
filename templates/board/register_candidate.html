@@ -1,25 +1,67 @@
 {% extends "board/base.html" %}
 {% load static %}
 
-
-
-{% block title %}Register Candidate{% endblock %}
+{% block title %}Register as Candidate | JobBoard{% endblock %}
 
 {% block content %}
+<div class="min-h-[calc(100vh-4rem)] flex items-start justify-center bg-slate-50 py-16 px-4">
+  <div class="w-full max-w-lg">
 
+    <div class="text-center mb-8">
+      <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600 text-white mb-4 shadow-lg">
+        <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+        </svg>
+      </div>
+      <h1 class="text-2xl font-extrabold text-gray-900">Create Candidate Account</h1>
+      <p class="mt-2 text-sm text-gray-500">
+        Already have an account?
+        <a href="{% url 'login' %}" class="font-semibold text-blue-600 hover:text-blue-700">Sign in</a>
+      </p>
+    </div>
 
-    <div>
-    <form method="POST">
-    {% csrf_token %}
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
+      <form method="POST" class="space-y-5">
+        {% csrf_token %}
 
-            <div class="form-container">
-                {{ form.as_p }}
+        {% for field in form %}
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">
+              {{ field.label }}
+              {% if field.field.required %}
+                <span class="text-red-500 ml-0.5">*</span>
+              {% endif %}
+            </label>
+            <div class="[&>input]:w-full [&>input]:rounded-xl [&>input]:border [&>input]:border-gray-300 [&>input]:px-4 [&>input]:py-3 [&>input]:text-sm [&>input]:focus:outline-none [&>input]:focus:ring-2 [&>input]:focus:ring-blue-500 [&>input]:focus:border-transparent [&>input]:transition [&>select]:w-full [&>select]:rounded-xl [&>select]:border [&>select]:border-gray-300 [&>select]:px-4 [&>select]:py-3 [&>select]:text-sm [&>select]:focus:outline-none [&>select]:focus:ring-2 [&>select]:focus:ring-blue-500 [&>select]:bg-white [&>textarea]:w-full [&>textarea]:rounded-xl [&>textarea]:border [&>textarea]:border-gray-300 [&>textarea]:px-4 [&>textarea]:py-3 [&>textarea]:text-sm [&>textarea]:focus:outline-none [&>textarea]:focus:ring-2 [&>textarea]:focus:ring-blue-500">
+              {{ field }}
             </div>
+            {% if field.errors %}
+              {% for error in field.errors %}
+                <p class="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+                  <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  {{ error }}
+                </p>
+              {% endfor %}
+            {% endif %}
+            {% if field.help_text %}
+              <p class="mt-1 text-xs text-gray-400">{{ field.help_text }}</p>
+            {% endif %}
+          </div>
+        {% endfor %}
 
+        <button type="submit"
+          class="w-full rounded-xl bg-blue-600 py-3.5 text-sm font-bold text-white hover:bg-blue-700 transition shadow-md hover:shadow-lg mt-2">
+          Create Account
+        </button>
+      </form>
+    </div>
 
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-   </div>
-
-
+    <p class="text-center text-xs text-gray-400 mt-6">
+      Are you a company?
+      <a href="{% url 'register_company' %}" class="text-blue-600 hover:underline font-medium">Register as Company instead</a>
+    </p>
+  </div>
+</div>
 {% endblock %}

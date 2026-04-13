@@ -93,8 +93,8 @@ class Application(models.Model):
             models.UniqueConstraint(fields=["candidate", "job"], name="unique_candidate_job_application")
         ]
 
-        def __str__(self):
-            return f"{self.candidate.user.username} -> {self.job.title}"
+    def __str__(self):
+        return f"{self.candidate.user.username} -> {self.job.title}"
 
 class Messages(models.Model):
     sender = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name='sent_messages')

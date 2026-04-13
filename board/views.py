@@ -352,6 +352,20 @@ class InboxView(LoginRequiredMixin, TemplateView):
         return redirect(f"{request.path}?user={selected_user_id}")
 
 
+def robots_txt(request):
+    lines = [
+        "User-agent: *",
+        "Disallow: /admin/",
+        "Disallow: /inbox/",
+        "Disallow: /profil/",
+        "Disallow: /company/applications/",
+        "Disallow: /message/",
+        "",
+        f"Sitemap: {request.scheme}://{request.get_host()}/sitemap.xml",
+    ]
+    return HttpResponse("\n".join(lines), content_type="text/plain")
+
+
 @login_required
 def apply_for_job(request, job_id):
     job = get_object_or_404(Job, id=job_id)

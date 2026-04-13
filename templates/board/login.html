@@ -1,55 +1,87 @@
 {% extends "board/base.html" %}
 
+{% block title %}Login | JobBoard{% endblock %}
+
 {% block content %}
-    <div class="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 py-16 px-4">
-        <div class="max-w-md mx-auto">
-            <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-8">
-                <h1 class="text-2xl font-bold text-slate-800 text-center mb-6">Login</h1>
+<div class="min-h-[calc(100vh-4rem)] flex">
 
-                {% if form.errors %}
-                    <div class="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-                        Username or password is incorrect.
-                    </div>
-                {% endif %}
-
-                <form method="post" class="space-y-5">
-                    {% csrf_token %}
-
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">Username</label>
-                        <input
-                                type="text"
-                                name="username"
-                                required
-                                autofocus
-                                class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                                placeholder="npr. amar123"
-                        />
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">Password</label>
-                        <input
-                                type="password"
-                                name="password"
-                                required
-                                class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                                placeholder="••••••••"
-                        />
-                    </div>
-
-                    {# Django LoginView podržava redirect parametar "next" #}
-                    {% if next %}
-                        <input type="hidden" name="next" value="{{ next }}">
-                    {% endif %}
-
-                    <button type="submit"
-                            class="w-full rounded-lg bg-indigo-600 py-3 font-semibold text-white shadow-md hover:bg-indigo-700 transition">
-                        Login
-                    </button>
-
-                </form>
-            </div>
-        </div>
+  <!-- Left branding panel -->
+  <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-900 flex-col items-center justify-center p-16 relative overflow-hidden">
+    <div class="absolute inset-0 opacity-20">
+      <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-500 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-indigo-500 rounded-full blur-3xl"></div>
     </div>
+    <div class="relative text-center">
+      <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 border border-white/20 text-white font-black text-3xl mb-6 backdrop-blur-sm">J</div>
+      <h2 class="text-3xl font-extrabold text-white mb-4">Welcome back!</h2>
+      <p class="text-slate-400 max-w-xs leading-relaxed">Sign in to access your applications, messages, and profile.</p>
+      <div class="mt-10 space-y-3 text-left">
+        {% for item in "123" %}{% endfor %}
+        <div class="flex items-center gap-3 text-sm text-slate-300">
+          <span class="flex h-6 w-6 items-center justify-center rounded-full bg-green-500/20 text-green-400">✓</span>
+          Track your job applications
+        </div>
+        <div class="flex items-center gap-3 text-sm text-slate-300">
+          <span class="flex h-6 w-6 items-center justify-center rounded-full bg-green-500/20 text-green-400">✓</span>
+          Message companies directly
+        </div>
+        <div class="flex items-center gap-3 text-sm text-slate-300">
+          <span class="flex h-6 w-6 items-center justify-center rounded-full bg-green-500/20 text-green-400">✓</span>
+          Upload and manage your CV
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right login form -->
+  <div class="flex flex-1 flex-col items-center justify-center px-6 py-12 bg-slate-50">
+    <div class="w-full max-w-sm">
+
+      <div class="mb-8 text-center">
+        <h1 class="text-2xl font-extrabold text-gray-900">Sign in to your account</h1>
+        <p class="mt-2 text-sm text-gray-500">
+          Don't have an account?
+          <a href="{% url 'register_candidate' %}" class="font-semibold text-blue-600 hover:text-blue-700">Register free</a>
+        </p>
+      </div>
+
+      {% if form.errors %}
+        <div class="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3.5 text-sm text-red-700 flex items-center gap-2">
+          <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          Invalid username or password. Please try again.
+        </div>
+      {% endif %}
+
+      <form method="post" class="space-y-5 bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
+        {% csrf_token %}
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">Username</label>
+          <input type="text" name="username" required autofocus
+            class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            placeholder="Your username"/>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">Password</label>
+          <input type="password" name="password" required
+            class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            placeholder="••••••••"/>
+        </div>
+
+        {% if next %}
+          <input type="hidden" name="next" value="{{ next }}">
+        {% endif %}
+
+        <button type="submit"
+          class="w-full rounded-xl bg-blue-600 py-3.5 text-sm font-bold text-white hover:bg-blue-700 transition shadow-md hover:shadow-lg">
+          Sign In
+        </button>
+      </form>
+    </div>
+  </div>
+
+</div>
 {% endblock %}

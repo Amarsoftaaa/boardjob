@@ -5,6 +5,7 @@ from django.contrib.auth.views import LoginView,LogoutView
 from .views import *
 
 urlpatterns = [
+    path("robots.txt", views.robots_txt, name="robots_txt"),
     path('',HomePageView.as_view(),name='home'),
     path("login/", LoginView.as_view(template_name="board/login.html"), name="login"),
     path("logout/", LogoutView.as_view(), name="logout"),
